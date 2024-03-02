@@ -2,14 +2,13 @@
 import gzip
 import sys
 
-## sys.argv[1] = vcf ##
+## sys.argv[1] = gzipped vcf prefix ##
 ## sys.argv[2] = chromosome ##
-## sys.argv[3] = dataset suffix ##
-## sys.argv[4] = duplicate record path ##
+## sys.argv[3] = duplicate record path ##
 
 
 # Define a function to identify what duplicated entires from a vcf.
-def identify_dups(vcf, chrom, suffix, dup_path):
+def identify_dups(vcf_prefix, chrom, dup_path):
     # Intialize a list to store the regions file information.
     dup_file_lines = []
     # Intialize a list to store the duplicated records vcf information.
@@ -20,8 +19,8 @@ def identify_dups(vcf, chrom, suffix, dup_path):
     # Inialize a set to store duplicated positions.
     dup_set = set()
     # Read the vcf file and intilialize the duplicated sites regions file.
-    with gzip.open(vcf, 'rt') as data, \
-         gzip.open(f'{dup_path}/{chrom}.{suffix}.dup_sites.txt.gz', 'wt') as dup_file:
+    with gzip.open(f'{vcf_prefix}.vcf.gz', 'rt') as data, \
+         gzip.open(f'{dup_path}/{vcf_prefix}.dup_sites.txt.gz', 'wt') as dup_file:
         # Iterate through every line in the original vcf file.
         for line in data:
             # If the line contains meta or header information.
@@ -75,4 +74,4 @@ def identify_dups(vcf, chrom, suffix, dup_path):
 
 
 # Generate the duplicated sites vcf and regions file.
-identify_dups(vcf=sys.argv[1], chrom=sys.argv[2], suffix=sys.argv[3], dup_path=sys.argv[4])
+identify_dups(vcf_prefix=sys.argv[1], chrom=sys.argv[2], dup_path=sys.argv[3])
