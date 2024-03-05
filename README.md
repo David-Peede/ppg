@@ -2,6 +2,26 @@
 
 Plasmodium Pop-Gen
 
+## Preprocessing the _Plasmodium falciparum_ Community Project V7.0 Dataset
+
+__[`Bgzip`](https://www.htslib.org/doc/bgzip.html) and [`Tabix`](https://www.htslib.org/doc/tabix.html)__
+
+```bash
+# Ungzip, bgzip, and create an index file.
+for CHR in 01 02 03 04 05 06 07 08 09 10 11 12 13 14; do
+sbatch -J Pf3D7_${CHR}_v3.pf.clean_vcf -N 1 -n 1 -t 1-0 --mem=2G -p batch --account=ccmb-condo -o logs/Pf3D7_${CHR}_v3.pf.clean_vcf-%A.out -e logs/Pf3D7_${CHR}_v3.pf.clean_vcf-%A.err --mail-type=FAIL --mail-user=david_peede@brown.edu --wrap="module load tabix; gunzip -d ./vcf_data/init_vcfs/Pf3D7_${CHR}_v3.pf7.vcf.gz; bgzip ./vcf_data/init_vcfs/Pf3D7_${CHR}_v3.pf7.vcf; tabix -p vcf ./vcf_data/init_vcfs/Pf3D7_${CHR}_v3.pf7.vcf.gz"
+done
+```
+
+__Split SNV Records__
+
+```bash
+# Create new records for SNV variants at multiallelic sites.
+for CHR in 01 02 03 04 05 06 07 08 09 10 11 12 13 14; do
+sbatch -J Pf3D7_${CHR}_v3.pf.split_records -N 1 -n 1 -t 1-0 --mem=100G -p batch --account=ccmb-condo -o logs/Pf3D7_${CHR}_v3.pf.split_records-%A.out -e logs/Pf3D7_${CHR}_v3.pf.split_records-%A.err --mail-type=FAIL --mail-user=david_peede@brown.edu --wrap="module load bcftools; bcftools norm -m -snps -Oz -o ./vcf_data/init_vcfs/Pf3D7_${CHR}_v3.pf7.split_records.vcf.gz ./vcf_data/init_vcfs/Pf3D7_${CHR}_v3.pf7.vcf.gz"
+done
+```
+
 ## `vcfs`
 
 `identify_duplicate_records.py`
